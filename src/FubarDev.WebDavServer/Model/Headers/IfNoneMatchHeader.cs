@@ -31,6 +31,8 @@ namespace FubarDev.WebDavServer.Model.Headers
             _etags = null;
         }
 
+        public bool IsEmpty => _etags == null || _etags.Count == 0;
+
         /// <summary>
         /// Parses the header string to get a new instance of the <see cref="IfNoneMatchHeader"/> class
         /// </summary>

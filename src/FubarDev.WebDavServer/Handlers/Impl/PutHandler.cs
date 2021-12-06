@@ -63,7 +63,7 @@ namespace FubarDev.WebDavServer.Handlers.Impl
 
             if (selectionResult.IsMissing)
             {
-                if (_context.RequestHeaders.IfNoneMatch != null)
+                if (_context.RequestHeaders.IfNoneMatch != null && _context.RequestHeaders.IfNoneMatch.IsEmpty == false)
                     throw new WebDavException(WebDavStatusCode.PreconditionFailed);
             }
             else
