@@ -75,7 +75,7 @@ namespace FubarDev.WebDavServer.Engines.Local
         {
             using (var sourceStream = await source.OpenReadAsync(cancellationToken).ConfigureAwait(false))
             {
-                using (var destinationStream = await destination.CreateAsync(cancellationToken).ConfigureAwait(false))
+                using (var destinationStream = await destination.CreateAsync(source.Length, cancellationToken).ConfigureAwait(false))
                 {
                     await sourceStream.CopyToAsync(destinationStream, 65536, cancellationToken).ConfigureAwait(false);
                 }

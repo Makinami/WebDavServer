@@ -36,7 +36,7 @@ namespace FubarDev.WebDavServer.FileSystem
         /// <returns>The stream used to write to the document</returns>
         [NotNull]
         [ItemNotNull]
-        Task<Stream> CreateAsync(CancellationToken cancellationToken);
+        Task<Stream> CreateAsync(long? size, CancellationToken cancellationToken);
 
         /// <summary>
         /// Copies the document to a new location within the same file system

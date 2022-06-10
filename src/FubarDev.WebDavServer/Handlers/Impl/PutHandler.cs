@@ -113,10 +113,15 @@ namespace FubarDev.WebDavServer.Handlers.Impl
                         .ConfigureAwait(false);
                 }
 
-                Debug.Assert(document != null, nameof(document) + " != null");
-                using (var fileStream = await document.CreateAsync(cancellationToken).ConfigureAwait(false))
+                var contentLength = _context.RequestHeaders.ContentLength;
+                if (contentLength == null)
                 {
-                    var contentLength = _context.RequestHeaders.ContentLength;
+                    _logger.LogWarning("PUT (upload) request without Content-Length header");
+                }
+
+                Debug.Assert(document != null, nameof(document) + " != null");
+                using (var fileStream = await document.CreateAsync(contentLength, cancellationToken).ConfigureAwait(false))
+                {
                     if (contentLength == null)
                     {
                         _logger.LogInformation("Writing data without content length");
