@@ -186,7 +186,7 @@ namespace FubarDev.WebDavServer.Handlers.Impl
             foreach (var entry in entries)
             {
                 var entryPath = entry.Path.OriginalString;
-                var href = _context.PublicControllerUrl.Append(entryPath, true);
+                var href = _context.PublicBaseUrl.Append(entryPath, true);
                 if (!_options.UseAbsoluteHref)
                     href = new Uri("/" + _context.PublicRootUrl.MakeRelativeUri(href).OriginalString, UriKind.Relative);
 
