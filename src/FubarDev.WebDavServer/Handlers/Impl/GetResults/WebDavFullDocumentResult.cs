@@ -75,10 +75,15 @@ namespace FubarDev.WebDavServer.Handlers.Impl.GetResults
                         response.Headers.Add(header.Key, header.Value.ToArray());
                     }
 
+                    // With RushFiles, every read means a request to filecache
+                    // so buffer needs to be reasonably big to limit the number of requests.
+                    var bufferSize = (int)Math.Max(2097152, Math.Min(_document.Length, 52428800)); // Between 2 and 50 MB
+
                     // Use the CopyToAsync function of the stream itself, because
                     // we're able to pass the cancellation token. This is a workaround
                     // for issue dotnet/corefx#9071 and fixes FubarDevelopment/WebDavServer#47.
-                    await stream.CopyToAsync(response.Body, 2097152, ct)
+
+                    await stream.CopyToAsync(response.Body, bufferSize, ct)
                         .ConfigureAwait(false);
                 }
             }
