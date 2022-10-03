@@ -30,7 +30,7 @@ namespace FubarDev.WebDavServer.FileSystem
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The stream used to write to the document.</returns>
-        Task<Stream> CreateAsync(CancellationToken cancellationToken);
+        Task<Stream> CreateAsync(long? size, CancellationToken cancellationToken);
 
         /// <summary>
         /// Opens the document for writing.

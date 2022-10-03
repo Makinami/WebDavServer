@@ -84,7 +84,7 @@ namespace FubarDev.WebDavServer.Engines.Local
         private static async Task MoveAsync(IDocument source, IDocument destination, CancellationToken cancellationToken)
         {
             using var sourceStream = await source.OpenReadAsync(cancellationToken).ConfigureAwait(false);
-            using var destinationStream = await destination.CreateAsync(cancellationToken).ConfigureAwait(false);
+            using var destinationStream = await destination.CreateAsync(source.Length, cancellationToken).ConfigureAwait(false);
             await sourceStream.CopyToAsync(destinationStream, SystemInfo.CopyBufferSize, cancellationToken).ConfigureAwait(false);
         }
 
