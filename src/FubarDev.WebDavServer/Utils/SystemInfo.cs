@@ -18,7 +18,7 @@ namespace FubarDev.WebDavServer.Utils
         /// <summary>
         /// Gets the size of the buffer for copy operations.
         /// </summary>
-        public const int CopyBufferSize = 81920;
+        public const int CopyBufferSize = 20971520;
 
         /// <summary>
         /// The name of the claim for the user home path.
