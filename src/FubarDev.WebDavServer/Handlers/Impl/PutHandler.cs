@@ -215,15 +215,13 @@ namespace FubarDev.WebDavServer.Handlers.Impl
                     if (contentLength == null)
                     {
                         _logger.LogInformation("Writing data without content length");
-                        await data.CopyToAsync(fileStream, SystemInfo.CopyBufferSize, cancellationToken).ConfigureAwait(false);
                     }
                     else
                     {
-                        _logger.LogInformation(
-                            "Writing data with content length {ContentLength}",
-                            contentLength.Value);
-                        await Copy(data, fileStream, contentLength.Value, cancellationToken).ConfigureAwait(false);
+                        _logger.LogInformation("Writing data with content length {ContentLength}", contentLength.Value);
                     }
+
+                    await Copy(data, fileStream, cancellationToken).ConfigureAwait(false);
                 }
 
                 var docPropertyStore = document.FileSystem.PropertyStore;
@@ -268,26 +266,40 @@ namespace FubarDev.WebDavServer.Handlers.Impl
             }
         }
 
-        private async Task Copy(Stream source, Stream destination, long contentLength, CancellationToken cancellationToken)
+        private async Task Copy(Stream source, Stream destination, CancellationToken cancellationToken)
         {
-            using var pool = _bufferPoolFactory.CreatePool();
-            var readCount = 0;
+            var bufferSize = SystemInfo.CopyBufferSize;
+            var buffer = new byte[bufferSize];
             var totalReadCount = 0L;
-            var remaining = contentLength;
-            while (remaining != 0)
+            int readCount;
+            do
             {
-                var buffer = pool.GetBuffer(readCount);
-                var copySize = (int)Math.Min(remaining, buffer.Length);
-                readCount = await source.ReadAsync(buffer, 0, copySize, cancellationToken).ConfigureAwait(false);
+                readCount = await EagerReadAsync(source, buffer, 0, bufferSize, cancellationToken);
                 await destination.WriteAsync(buffer, 0, readCount, cancellationToken).ConfigureAwait(false);
 
-                remaining -= readCount;
                 totalReadCount += readCount;
                 if (_logger.IsEnabled(LogLevel.Trace))
                 {
                     _logger.LogTrace("Wrote {Count} bytes", totalReadCount);
                 }
             }
+            while (readCount > 0);
+        }
+
+        private async Task<int> EagerReadAsync(Stream data, byte[] buffer, int offset, int length, CancellationToken cancellationToken)
+        {
+            int totalRead = 0;
+            int read;
+            do
+            {
+                read = await data.ReadAsync(buffer, offset, length, cancellationToken);
+                totalRead += read;
+                offset += read;
+                length -= read;
+            }
+            while (read != 0 && length > 0);
+
+            return totalRead;
         }
     }
 }
