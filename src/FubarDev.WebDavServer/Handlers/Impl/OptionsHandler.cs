@@ -67,7 +67,8 @@ namespace FubarDev.WebDavServer.Handlers.Impl
                     Headers[header.Key] = header.Value;
                 }
 
-                Headers["MS-Author-Via"] = new[] { "DAV" };
+                // RushFiles doesn't support Class 2 of WebDAV (locking), so don't announce Microsoft Office headers either.
+                //Headers["MS-Author-Via"] = new[] { "DAV" };
 
                 return base.ExecuteResultAsync(response, ct);
             }
